@@ -39,7 +39,7 @@ const Auth = () => {
         headers: myHeaders,
         body: JSON.stringify(obj),
         redirect: 'follow',
-        credentials: 'include' //!important
+        // credentials: 'include' //!important
     };
 
     try {
