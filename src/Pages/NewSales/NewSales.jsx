@@ -138,7 +138,7 @@ const NewSales = () => {
       headers: myHeaders,
       body: JSON.stringify({ ...data, cartItems }),
       redirect: 'follow',
-      // credentials: 'include' //!important
+      credentials: 'include' //!important
     };
 
     try {

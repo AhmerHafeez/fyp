@@ -16,7 +16,7 @@ const Aside = () => {
                 method: 'GET',
                 headers: myHeaders,
                 redirect: 'follow',
-                // credentials: 'include' //!important
+                credentials: 'include' //!important
             };
             const response = await fetch(`${baseUrl}/logout`, requestOptions);
             const result = await response.json();

@@ -17,7 +17,7 @@ const Modal = (props) => {
                 "productId": props.pid
             }),
             redirect: 'follow',
-            // credentials: 'include' //!important
+            credentials: 'include' //!important
         };
 
         try {

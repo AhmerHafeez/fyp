@@ -43,7 +43,7 @@ const ModalAdd = (props) => {
             headers: myHeaders,
             body: JSON.stringify(data),
             redirect: 'follow',
-            // credentials: 'include' //!important
+            credentials: 'include' //!important
         };
 
         try {
