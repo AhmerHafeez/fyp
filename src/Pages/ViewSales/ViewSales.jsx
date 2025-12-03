@@ -31,7 +31,7 @@ const ViewSales = () => {
       method: 'GET',
       headers: myHeaders,
       redirect: 'follow',
-      // credentials: 'include' //!important
+      credentials: 'include' //!important
     };
 
     try {
@@ -58,7 +58,7 @@ const ViewSales = () => {
         body: JSON.stringify({ salesId: id }),
         headers: myHeaders,
         redirect: 'follow',
-        // credentials: 'include' //!important
+        credentials: 'include' //!important
       };
       try {
         const response = await fetch(`${baseUrl}/deletesales`, requestOptions);
