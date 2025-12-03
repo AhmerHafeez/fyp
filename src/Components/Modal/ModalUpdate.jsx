@@ -42,7 +42,7 @@ const ModalUpdate = (props) => {
             headers: myHeaders,
             body: JSON.stringify({ productId: props.updateObj.pid, newdata: data }),
             redirect: 'follow',
-            credentials: 'include' //!important
+            // credentials: 'include' //!important
         };
 
         try {

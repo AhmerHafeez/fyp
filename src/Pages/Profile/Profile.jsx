@@ -21,7 +21,7 @@ const Profile = () => {
       method: 'GET',
       headers: myHeaders,
       redirect: 'follow',
-      credentials: 'include' //!important
+      // credentials: 'include' //!important
     };
     const response = await fetch(`${baseUrl}/getUser`, requestOptions);
     const result = await response.json();
