@@ -32,61 +32,67 @@ const Auth = () => {
     }
 
   const loginUser = async (obj) => {
-    let myHeaders = new Headers();
-    myHeaders.append("Content-Type", "application/json");
-    let requestOptions = {
-        method: 'POST',
-        headers: myHeaders,
-        body: JSON.stringify(obj),
-        redirect: 'follow',
-        credentials: 'include' //!important
-    };
-
     try {
-        // yaha /api add kiya
-        const response = await fetch(`${baseurl}/login`, requestOptions);
+        const response = await fetch(`${baseurl}/login`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(obj)
+        });
+        
         const result = await response.json();
-        if (result.status) {
+        
+        if (result.status && result.token) {
+            // Store the token in localStorage
+            localStorage.setItem('authToken', result.token);
             dispatch(setloginStatus(true));
             toast.success("Login success");
             setTimeout(() => {
                 navigate("/");
             }, 1500);
         } else {
-            toast.error("Invalid credentials");
-            console.log('Error::Auth::loginUser::result', result.message)
+            toast.error(result.message || "Invalid credentials");
+            console.log('Error::Auth::loginUser::result', result.message);
         }
     } catch (error) {
         toast.error("Something went wrong! try again");
-        console.log('Error::Auth::loginUser', error)
+        console.log('Error::Auth::loginUser', error);
     }
 }
 
 const registerUser = async (obj) => {
-    let myHeaders = new Headers();
-    myHeaders.append("Content-Type", "application/json");
-    let requestOptions = {
-        method: 'POST',
-        headers: myHeaders,
-        body: JSON.stringify(obj),
-        redirect: 'follow',
-        credentials: 'include' //!important
-    };
-
     try {
-        // yaha /api add kiya
-const response = await fetch(`${baseurl}/register`, requestOptions);
+        const response = await fetch(`${baseurl}/register`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(obj)
+        });
+        
         const result = await response.json();
+        
         if (result.status) {
-            toast.success("Registration success! Login to account");
-            setisLoginPage(!isLoginPage);
+            // If registration is successful and returns a token, store it
+            if (result.token) {
+                localStorage.setItem('authToken', result.token);
+                dispatch(setloginStatus(true));
+                toast.success("Registration successful! Logging you in...");
+                setTimeout(() => {
+                    navigate("/");
+                }, 1500);
+            } else {
+                toast.success("Registration successful! Please login to continue.");
+                setisLoginPage(true);
+            }
         } else {
-            toast.error("Something went wrong! try again");
-            console.log('Error::Auth::registerUser::result', result.message)
+            toast.error(result.message || "Something went wrong! Please try again.");
+            console.log('Error::Auth::registerUser::result', result.message);
         }
     } catch (error) {
-        toast.error("Something went wrong! try again");
-        console.log('Error::Auth::registerUser', error)
+        toast.error("Something went wrong! Please try again.");
+        console.log('Error::Auth::registerUser', error);
     }
 }
 

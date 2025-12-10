@@ -4,20 +4,24 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 // Define the async thunk for fetching user data
 export const fetchProductssData = createAsyncThunk('product/fetchProductssData', async () => {
-  let myHeaders = new Headers();
-    let requestOptions = {
+    const token = localStorage.getItem('authToken');
+    const response = await fetch('/api/products', {
         method: 'GET',
-        headers: myHeaders,
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+        },
         redirect: 'follow'
-    };
-    const response = await fetch('/api/products',requestOptions);
+    });
+    
     const jsonData = await response.json();
-    // console.log(jsonData);
-    if (jsonData.message) {
-      // handle error and return empty array
-      console.log(jsonData.message);
-      return []
+    
+    if (!response.ok) {
+        // If the response is not ok, handle the error
+        console.error('Error fetching products:', jsonData.message || 'Unknown error');
+        throw new Error(jsonData.message || 'Failed to fetch products');
     }
+    
     return jsonData;
 });
 

@@ -33,37 +33,36 @@ const ModalUpdate = (props) => {
     }
 
     const onSubmit = async (data) => {
-        // console.log(data);
-
-        let myHeaders = new Headers();
-        myHeaders.append("Content-Type", "application/json");
-        let requestOptions = {
-            method: 'POST',
-            headers: myHeaders,
-            body: JSON.stringify({ productId: props.updateObj.pid, newdata: data }),
-            redirect: 'follow',
-            credentials: 'include' //!important
-        };
-
+        const token = localStorage.getItem('authToken');
+        
         try {
-            const response = await fetch(`${baseUrl}/update`, requestOptions)
-            const result = await response.json()
+            const response = await fetch(`${baseUrl}/update`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({ productId: props.updateObj.pid, newdata: data }),
+                redirect: 'follow'
+            });
+            
+            const result = await response.json();
+            
             if (result.status) {
-                toast.success("Product added succesfully");
-                // to refresh,
+                toast.success("Product updated successfully");
+                // to refresh
                 props.fetchProducts();
-                // dispatch(setProducts([]));
             } else {
-                toast.error("Something went wrong! try again");
-                console.log('Error::Modal Add::result', result.message)
+                toast.error(result.message || "Something went wrong! Please try again");
+                console.error('Error::Modal Update::result', result.message);
             }
         } catch (error) {
-            toast.error("Something went wrong! ty again");
-            console.log('Error::Modal Add::', error)
-        }
-        finally {
+            toast.error("Something went wrong! Please try again");
+            console.error('Error::Modal Update::', error);
+        } finally {
             // close dialog
-            document.getElementById(props.id).close();
+            const modal = document.getElementById(props.id);
+            if (modal) modal.close();
         }
     }
 

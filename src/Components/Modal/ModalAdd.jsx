@@ -35,38 +35,38 @@ const ModalAdd = (props) => {
 
     const onSubmit = async (data) => {
         console.log(data);
-
-        let myHeaders = new Headers();
-        myHeaders.append("Content-Type", "application/json");
-        let requestOptions = {
-            method: 'POST',
-            headers: myHeaders,
-            body: JSON.stringify(data),
-            redirect: 'follow',
-            credentials: 'include' //!important
-        };
-
+        const token = localStorage.getItem('authToken');
+        
         try {
-            const response = await fetch(`${baseUrl}/insert`, requestOptions);
+            const response = await fetch(`${baseUrl}/insert`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify(data),
+                redirect: 'follow'
+            });
+            
             const result = await response.json();
+            
             if (result.status) {
-                toast.success("Product added succesfully");
+                toast.success("Product added successfully");
                 // to refresh,
                 props.fetchProducts();
-                // dispatch(setProducts([]));
             } else {
-                toast.error("Something went wrong! try again");
-                console.log('Error::Modal Add::result', result.message)
+                toast.error(result.message || "Something went wrong! Please try again");
+                console.error('Error::Modal Add::result', result.message);
             }
         } catch (error) {
-            toast.error("Something went wrong! ty again");
-            console.log('Error::Modal Add::', error)
-        }
-        finally {
+            toast.error("Something went wrong! Please try again");
+            console.error('Error::Modal Add::', error);
+        } finally {
             // close dialog
             const f = document.getElementById("addFormModal");
-            f.reset();
-            document.getElementById(props.id).close();
+            if (f) f.reset();
+            const modal = document.getElementById(props.id);
+            if (modal) modal.close();
         }
     }
 

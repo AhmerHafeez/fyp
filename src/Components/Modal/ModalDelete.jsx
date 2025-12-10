@@ -8,32 +8,34 @@ const Modal = (props) => {
     // const dispatch = useDispatch();
 
     const handleDelete = async () => {
-        let myHeaders = new Headers();
-        myHeaders.append("Content-Type", "application/json");
-        let requestOptions = {
-            method: 'POST',
-            headers: myHeaders,
-            body: JSON.stringify({
-                "productId": props.pid
-            }),
-            redirect: 'follow',
-            credentials: 'include' //!important
-        };
-
+        const token = localStorage.getItem('authToken');
+        
         try {
-            const response = await fetch(`${baseUrl}/delete`, requestOptions)
+            const response = await fetch(`${baseUrl}/delete`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({
+                    "productId": props.pid
+                }),
+                redirect: 'follow'
+            });
+            
             const result = await response.json();
+            
             if (result.status) {
-                toast.success("Product deleted succesfully");
-                // to refresh,
+                toast.success("Product deleted successfully");
+                // to refresh
                 props.fetchProducts();
-                // dispatch(setProducts([]));
             } else {
-                toast.error("Something went wrong! try again");
-                console.log('Error::Modal Delete::result', result.message)
+                toast.error(result.message || "Something went wrong! Please try again");
+                console.error('Error::Modal Delete::result', result.message);
             }
         } catch (error) {
-            console.log('error', error)
+            toast.error("Something went wrong! Please try again");
+            console.error('Error::Modal Delete::', error);
         }
     }
     return (

@@ -22,25 +22,39 @@ const Dashboard = () => {
 
     // fetch products:
     const fetchProducts = async () => {
-        let myHeaders = new Headers();
-        myHeaders.append("Content-Type", "application/json");
-        let requestOptions = {
-            method: 'GET',
-            headers: myHeaders,
-            redirect: 'follow',
-            credentials: 'include' //!important
-        };
-
-        const response = await fetch(`${baseUrl}/products`, requestOptions);
-        const result = await response.json();
-        if (result.status) {
-            console.log("Product recived succesfully");
-            dispatch(setProducts(result.data));
-        } else {
-            alert("Something went wrong! try again");
-            console.log('Error::Dashboard::result', result.message)
+        const token = localStorage.getItem('authToken');
+        
+        try {
+            const response = await fetch(`${baseUrl}/products`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                redirect: 'follow'
+            });
+            
+            const result = await response.json();
+            
+            if (result.status) {
+                console.log("Products received successfully");
+                dispatch(setProducts(result.data));
+            } else {
+                console.error('Error::Dashboard::result', result.message);
+                if (result.message === 'Unauthorized' || response.status === 401) {
+                    // Handle unauthorized (token expired/invalid)
+                    localStorage.removeItem('authToken');
+                    navigate('/login');
+                } else {
+                    alert(result.message || "Something went wrong! Please try again");
+                }
+            }
+        } catch (error) {
+            console.error('Error::Dashboard::fetch', error);
+            alert("Failed to fetch products. Please try again.");
+        } finally {
+            setisFetchFinished(true);
         }
-        setisFetchFinished(true);
     }
 
 

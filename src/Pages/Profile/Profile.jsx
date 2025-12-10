@@ -4,6 +4,7 @@ import Aside from '../../Components/Aside/Aside';
 import { useSelector } from 'react-redux';
 import { UserCircleIcon } from '@heroicons/react/24/outline';
 import baseUrl from '../../utils/baseurl';
+import toast from 'react-hot-toast';
 
 const Profile = () => {
   const isLogin = useSelector((state) => state.login.loginStatus);
@@ -15,22 +16,29 @@ const Profile = () => {
   const navigate = useNavigate();
 
   const getUser = async () => {
-    let myHeaders = new Headers();
-    myHeaders.append("Content-Type", "application/json");
-    let requestOptions = {
+    const token = localStorage.getItem('authToken');
+    const requestOptions = {
       method: 'GET',
-      headers: myHeaders,
-      redirect: 'follow',
-      credentials: 'include' //!important
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      redirect: 'follow'
     };
-    const response = await fetch(`${baseUrl}/getUser`, requestOptions);
-    const result = await response.json();
-    console.log(result);
-    if (result.status) {
-      setUser(result.data)
-    } else {
-      alert("Something went wrong! try again");
-      console.log('Error::profile::result', result.message)
+    
+    try {
+      const response = await fetch(`${baseUrl}/getUser`, requestOptions);
+      const result = await response.json();
+      
+      if (result.status) {
+        setUser(result.data);
+      } else {
+        toast.error(result.message || "Failed to fetch user data");
+        console.error('Error::profile::result', result.message);
+      }
+    } catch (error) {
+      toast.error("Something went wrong! Please try again");
+      console.error('Error::profile::fetch', error);
     }
   }
   useEffect(() => {

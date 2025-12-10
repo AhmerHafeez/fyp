@@ -129,37 +129,37 @@ const NewSales = () => {
   }
 
   const onSubmit = async (data) => {
-    // console.log({ ...data, cartItems });
-
-    let myHeaders = new Headers();
-    myHeaders.append("Content-Type", "application/json");
-    let requestOptions = {
+    const token = localStorage.getItem('authToken');
+    const requestOptions = {
       method: 'POST',
-      headers: myHeaders,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
       body: JSON.stringify({ ...data, cartItems }),
-      redirect: 'follow',
-      credentials: 'include' //!important
+      redirect: 'follow'
     };
 
     try {
-      const response = await fetch(`${baseUrl}/createsales`, requestOptions)
-      const result = await response.json()
+      const response = await fetch(`${baseUrl}/createsales`, requestOptions);
+      const result = await response.json();
+      
       if (result.status) {
-        toast.success("Sales Created succesfully");
-        // to update lists, empty the products slice that will result on automatic fetching of new items.
+        toast.success("Sales Created successfully");
+        // to update lists, empty the products slice that will result in automatic fetching of new items
         dispatch(setProducts([]));
         // same as above for sales slice
         dispatch(setSale([]));
       } else {
-        toast.error("Something went wrong! try again");
-        console.log('Error::new sales::result', result.message)
+        toast.error(result.message || "Something went wrong! Please try again");
+        console.log('Error::new sales::result', result.message);
       }
     } catch (error) {
-      toast.error("Something went wrong! ty again");
-      console.log('Error::new sales::', error)
+      toast.error("Something went wrong! Please try again");
+      console.log('Error::new sales::', error);
     } finally {
-      const f = document.getElementById("form_new_sales");
-      f.reset();
+      const form = document.getElementById("form_new_sales");
+      if (form) form.reset();
     }
   }
 

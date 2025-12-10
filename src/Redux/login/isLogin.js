@@ -1,7 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit'
 
 const initialState = {
-    loginStatus : document.cookie !== "" //check for cookie
+    loginStatus: !!localStorage.getItem('authToken') // Check for auth token in localStorage
 };
 
 export const loginSlice = createSlice({

@@ -10,21 +10,35 @@ const Aside = () => {
     }
     const logoutUser = async () => {
         if (window.confirm("Are you sure to logout?")) {
-            let myHeaders = new Headers();
-            myHeaders.append("Content-Type", "application/json");
-            let requestOptions = {
-                method: 'GET',
-                headers: myHeaders,
-                redirect: 'follow',
-                credentials: 'include' //!important
-            };
-            const response = await fetch(`${baseUrl}/logout`, requestOptions);
-            const result = await response.json();
-            if (result.status) {
-                console.log("Logout Success");
-                window.location.reload();
-            } else {
-                alert("Something went wrong! try again");
+            const token = localStorage.getItem('authToken');
+            
+            try {
+                const response = await fetch(`${baseUrl}/logout`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    redirect: 'follow'
+                });
+                
+                // Always remove the token from localStorage on logout attempt
+                localStorage.removeItem('authToken');
+                
+                if (response.ok) {
+                    console.log("Logout successful");
+                    // Force a full page reload to reset the application state
+                    window.location.href = '/login';
+                } else {
+                    // Even if the server logout fails, we still want to clear the token
+                    console.error('Logout failed, but token was removed');
+                    window.location.href = '/login';
+                }
+            } catch (error) {
+                console.error('Error during logout:', error);
+                // Still redirect to login even if there's an error
+                localStorage.removeItem('authToken');
+                window.location.href = '/login';
             }
         }
 

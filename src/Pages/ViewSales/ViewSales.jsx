@@ -25,13 +25,14 @@ const ViewSales = () => {
   })
 
   const getSales = async () => {
-    let myHeaders = new Headers();
-    myHeaders.append("Content-Type", "application/json");
-    let requestOptions = {
+    const token = localStorage.getItem('authToken');
+    const requestOptions = {
       method: 'GET',
-      headers: myHeaders,
-      redirect: 'follow',
-      credentials: 'include' //!important
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      redirect: 'follow'
     };
 
     try {
@@ -51,14 +52,15 @@ const ViewSales = () => {
 
   const handleDelete = async(id) => {
     if (window.confirm("Are u sure to delete?")) {
-      let myHeaders = new Headers();
-      myHeaders.append("Content-Type", "application/json");
-      let requestOptions = {
+      const token = localStorage.getItem('authToken');
+      const requestOptions = {
         method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
         body: JSON.stringify({ salesId: id }),
-        headers: myHeaders,
-        redirect: 'follow',
-        credentials: 'include' //!important
+        redirect: 'follow'
       };
       try {
         const response = await fetch(`${baseUrl}/deletesales`, requestOptions);
